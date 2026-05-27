@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from sqlalchemy import String, Date, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -16,7 +16,7 @@ class Contract(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    user_id: Mapped[int] = mapped_column(
+    user_id: Mapped[str] = mapped_column(
         ForeignKey("users.id"),
         index=True,
         nullable=False,
@@ -34,8 +34,8 @@ class Contract(Base):
     is_active: Mapped[bool] = mapped_column(default=True)
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
     )
 
     user: Mapped["User"] = relationship(back_populates="contracts")
