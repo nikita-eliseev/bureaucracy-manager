@@ -2,23 +2,24 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, status
 from jose import JWTError
-from app.backend.core.config import settings
+from core.config import settings
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.backend.core.security import (
+from core.security import (
     create_access_token, 
     create_refresh_token,
     decode_token, 
     hash_password, 
     verify_password
 )
-from app.backend.repositories.refresh_token import RefreshTokenRepository
-from app.backend.repositories.user import UserRepository
+from repositories.refresh_token import RefreshTokenRepository
+from repositories.user import UserRepository
 
 
 
 class AuthService:
     def __init__(self, db: AsyncSession):
+        self.db = db
         self.user_repository = UserRepository(db=db)
         self.refresh_token_repository = RefreshTokenRepository(db=db)
         
@@ -29,16 +30,22 @@ class AuthService:
         
         hashed = hash_password(password=password)
         
-        return await self.user_repository.create_user(email=email, hashed_password=hashed)
+        user = await self.user_repository.create_user(email=email, hashed_password=hashed)
+        await self.db.commit()
+        await self.db.refresh(user)
+        return user
     
     async def login(self, email: str, password: str):
         user = await self.user_repository.get_by_email(email=email)
         
         if not user:
-            raise Exception("User does not exists")   #   change 
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid credentials"
+            )  
         
         if not verify_password(password=password, hashed_password=user.hashed_password):
-            raise Exception("Verify password is incorrect")
+            raise HTTPException( detail="User does not exists", status_code=status.HTTP_400_BAD_REQUEST) 
         
         access = create_access_token(user.id)
         refresh = create_refresh_token(user.id)
@@ -49,6 +56,7 @@ class AuthService:
             token=refresh,
             expire_at=expire_at
         )
+        await self.db.commit()
         return access, refresh
     
     async def refresh(self, refresh_token: str):
@@ -60,11 +68,15 @@ class AuthService:
         try:
             payload = decode_token(token=refresh_token)
             user_id = payload.get("sub")
-
+            
+            await self.db.commit()
             return create_access_token(user_id)
 
         except JWTError:
-            raise Exception("Refresh token error")   #   change 
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Refresh token error"
+            )  
         
     async def logout(self, refresh_token: str):
         await self.refresh_token_repository.delete(refresh_token)

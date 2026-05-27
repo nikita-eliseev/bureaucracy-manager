@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from jose import jwt
 from passlib.context import CryptContext
-from app.backend.core.config import settings
+from core.config import settings
 
 now = datetime.now(timezone.utc)
 

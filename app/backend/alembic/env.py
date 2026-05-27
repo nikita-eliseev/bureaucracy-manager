@@ -3,11 +3,11 @@ import asyncio
 
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import  create_async_engine
-from app.backend.core.config import settings
+from core.config import settings
 from alembic import context
 
-from app.backend.core.database import Base
-from app.backend.models import user, contract, refresh_token
+from core.database import Base
+from models import user, contract, refresh_token
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

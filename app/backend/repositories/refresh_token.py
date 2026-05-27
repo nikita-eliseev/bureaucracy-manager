@@ -1,6 +1,6 @@
 from sqlalchemy import delete, select
 
-from app.backend.models.refresh_token import RefreshToken
+from models.refresh_token import RefreshToken
 from sqlalchemy.ext.asyncio import AsyncSession
 
 class RefreshTokenRepository:

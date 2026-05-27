@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import status
 
-from app.backend.core.dependencies import get_auth_serivece
-from app.backend.schemas.auth import LoginRequest, RefreshRequest, RegisterRequest, TokenResponse
-from app.backend.services.auth import AuthService
+from core.dependencies import get_auth_serivece, get_current_user
+from schemas.auth import LoginRequest, RefreshRequest, RegisterRequest, TokenResponse
+from services.auth import AuthService
 
 router = APIRouter(default="auth", tags=["AUTH"])
 
@@ -60,3 +60,9 @@ async def logout(
     await auth_service.logout(payload.refresh_token)
 
     return {"status": "ok"}
+
+@router.get("/me")
+async def me(
+    user_id: str = Depends(get_current_user)
+):
+    return {"user_id": user_id}

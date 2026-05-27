@@ -4,11 +4,11 @@ from datetime import date, datetime, timezone
 from sqlalchemy import String, Date, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.backend.core.database import Base
+from core.database import Base
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from app.backend.models.user import User
+    from models.user import User
 
 
 class Contract(Base):

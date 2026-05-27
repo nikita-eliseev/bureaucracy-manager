@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.backend.models.user import User
+from models.user import User
 
 
 class UserRepository:
@@ -21,7 +21,4 @@ class UserRepository:
         )
         
         self.db.add(user)
-        await self.db.commit()
-        await self.db.refresh(user)
-
         return user
