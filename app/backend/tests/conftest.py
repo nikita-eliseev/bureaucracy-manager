@@ -26,7 +26,7 @@ TestingSessionLocal = sessionmaker(
 )
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 async def prepared_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

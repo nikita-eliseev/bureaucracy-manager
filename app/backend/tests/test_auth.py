@@ -1,7 +1,7 @@
 import pytest
 
 @pytest.mark.asyncio
-async def test_register(client):
+async def test_register(client, prepared_db):
     response = await client.post(
         "/auth/register",
         json={
@@ -19,7 +19,7 @@ async def test_register(client):
     assert data["email"] == "test@example.com"
     
 @pytest.mark.asyncio
-async def test_register_duplicate_email(client):
+async def test_register_duplicate_email(client, prepared_db):
     await client.post(
         "/auth/register",
         json={
@@ -39,7 +39,7 @@ async def test_register_duplicate_email(client):
     assert response.status_code == 400
     
 @pytest.mark.asyncio
-async def test_login_success(client):
+async def test_login_success(client, prepared_db):
     await client.post(
         "/auth/register",
         json={
