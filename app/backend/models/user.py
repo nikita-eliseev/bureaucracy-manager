@@ -5,11 +5,11 @@ from uuid import uuid4
 from sqlalchemy import String, Boolean, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship #, relationship
 
-from core.database import Base
+from app.backend.core.database import Base
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from models.contract import Contract
+    from app.backend.models.contract import Contract
 
 
 class User(Base):

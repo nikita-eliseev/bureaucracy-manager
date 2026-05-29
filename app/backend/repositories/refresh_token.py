@@ -1,6 +1,6 @@
 from sqlalchemy import delete, select
 
-from models.refresh_token import RefreshToken
+from app.backend.models.refresh_token import RefreshToken
 from sqlalchemy.ext.asyncio import AsyncSession
 
 class RefreshTokenRepository:
@@ -15,9 +15,6 @@ class RefreshTokenRepository:
         )
         
         self.db.add(refresh_token)
-        await self.db.commit()
-        
-        return refresh_token
         
     async def get(self, token: str):
         result = await self.db.execute(
@@ -30,4 +27,3 @@ class RefreshTokenRepository:
         await self.db.execute(
             delete(RefreshToken).where(RefreshToken.token == token)
         )
-        await self.db.commit()
