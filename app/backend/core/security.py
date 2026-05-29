@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta, timezone
-
+import hashlib
 from jose import jwt
 from passlib.context import CryptContext
-from core.config import settings
+from app.backend.core.config import settings
 
 now = datetime.now(timezone.utc)
 
@@ -51,3 +51,6 @@ def decode_token(token: str):
         settings.secret_key,
         algorithms=settings.algorithm 
     )
+    
+def hash_token(token: str) -> str:
+    return hashlib.sha256(token.encode()).hexdigest()

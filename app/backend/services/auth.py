@@ -2,18 +2,19 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, status
 from jose import JWTError
-from core.config import settings
+from app.backend.core.config import settings
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.security import (
+from app.backend.core.security import (
     create_access_token, 
     create_refresh_token,
     decode_token, 
     hash_password, 
-    verify_password
+    verify_password,
+    hash_token
 )
-from repositories.refresh_token import RefreshTokenRepository
-from repositories.user import UserRepository
+from app.backend.repositories.refresh_token import RefreshTokenRepository
+from app.backend.repositories.user import UserRepository
 
 
 
@@ -26,7 +27,7 @@ class AuthService:
     async def register(self, email: str, password: str):
         existing = await self.user_repository.get_by_email(email=email)
         if existing:
-            raise HTTPException( detail="User already exists", status_code=status.HTTP_400_BAD_REQUEST)   #   change 
+            raise HTTPException( detail="User already exists", status_code=status.HTTP_400_BAD_REQUEST) 
         
         hashed = hash_password(password=password)
         
@@ -49,11 +50,15 @@ class AuthService:
         
         access = create_access_token(user.id)
         refresh = create_refresh_token(user.id)
+        
+        hashed_refresh = hash_token(refresh)
+        
+        
         expire_at = datetime.now(timezone.utc) + timedelta(days=settings.refresh_token_expire_days)
         
         await self.refresh_token_repository.create(
             user_id=user.id,
-            token=refresh,
+            token=hashed_refresh,
             expire_at=expire_at
         )
         await self.db.commit()
@@ -63,6 +68,12 @@ class AuthService:
         db_token = await self.refresh_token_repository.get(refresh_token)
 
         if not db_token:
+            return None
+
+        if db_token.revoked:
+            return None
+
+        if db_token.expire_at < datetime.now(timezone.utc):
             return None
         
         try:
@@ -80,3 +91,4 @@ class AuthService:
         
     async def logout(self, refresh_token: str):
         await self.refresh_token_repository.delete(refresh_token)
+        self.db.commit()

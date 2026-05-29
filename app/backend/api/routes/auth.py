@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import status
 
-from core.dependencies import get_auth_serivece, get_current_user
-from schemas.auth import LoginRequest, RefreshRequest, RegisterRequest, TokenResponse
-from services.auth import AuthService
+from app.backend.core.dependencies import get_auth_serivece, get_current_user
+from app.backend.schemas.auth import LoginRequest, RefreshRequest, RegisterRequest, TokenResponse
+from app.backend.services.auth import AuthService
 
-router = APIRouter(default="auth", tags=["AUTH"])
+router = APIRouter(prefix="/auth", tags=["AUTH"])
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -30,7 +30,11 @@ async def login(
     )
 
     if not tokens:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User does not exist"
+        )
+    
 
     access, refresh = tokens
 

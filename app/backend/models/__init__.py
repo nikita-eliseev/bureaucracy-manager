@@ -1,3 +1,3 @@
-from models.user import User
-from models.contract import Contract
-from models.refresh_token import RefreshToken
+from app.backend.models.user import User
+from app.backend.models.contract import Contract
+from app.backend.models.refresh_token import RefreshToken
