@@ -1,0 +1,75 @@
+import pytest
+
+@pytest.mark.asyncio
+async def test_create_contract(auth_client):
+    response = await auth_client.post(
+        "/contracts/create",
+        json={
+            "company": "Vodafone",
+            "contract_type": "Internet",
+            "end_date": "2027-01-01",
+            "notice_period_months": 3
+        }
+    )
+
+    assert response.status_code == 201
+
+    data = response.json()
+
+    assert data["company"] == "Vodafone"
+    assert data["contract_type"] == "Internet"
+    
+@pytest.mark.asyncio
+async def test_update_contract(auth_client):
+    response1 = await auth_client.post(
+        "/contracts/create",
+        json={
+            "company": "Vodafone",
+            "contract_type": "Internet",
+            "end_date": "2027-01-01",
+            "notice_period_months": 3
+        }
+    )
+
+    assert response1.status_code == 201
+
+    contract_id = response1.json()["id"]
+
+    response2 = await auth_client.patch(
+        f"/contracts/update/{contract_id}",
+        json={
+            "company": "Test",
+            "contract_type": "test2",
+            "end_date": "2027-01-01",
+            "notice_period_months": 1
+        }
+    )
+    
+    data = response2.json()
+
+    assert response2.status_code == 200
+    
+    assert data["company"] == "Test"
+    assert data["contract_type"] == "test2"
+    
+@pytest.mark.asyncio
+async def test_delete_contract(auth_client):
+    response1 = await auth_client.post(
+        "/contracts/create",
+        json={
+            "company": "Vodafone",
+            "contract_type": "Internet",
+            "end_date": "2027-01-01",
+            "notice_period_months": 3
+        }
+    )
+
+    assert response1.status_code == 201
+    
+    contract_id = response1.json()["id"]
+    
+    response2 = await auth_client.delete(
+        f"/contracts/delete/{contract_id}"
+    )
+    
+    assert response2.status_code == 200
