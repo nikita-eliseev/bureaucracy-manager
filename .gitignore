@@ -220,4 +220,4 @@ uploads_data
 uploads
 test.db
 logs
-*.ini
+# *.ini
