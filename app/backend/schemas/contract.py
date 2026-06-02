@@ -18,7 +18,7 @@ class ContractUpdate(BaseModel):
     company: str | None = None
     contract_type: str | None = None
     end_date: date | None = None
-    notice_period_months: int | None = None
+    notice_period_months: int | None = Field(default=1, ge=1, le=12, description="Notice period in months, usually 1 or 3")
     is_active: bool | None = None
 
 class ContractResponse(BaseModel):

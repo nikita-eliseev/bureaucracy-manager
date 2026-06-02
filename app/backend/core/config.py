@@ -1,3 +1,5 @@
+from datetime import date
+from dateutil.relativedelta import relativedelta
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -21,3 +23,9 @@ class Settings(BaseSettings):
     
     
 settings = Settings()
+
+def calculate_cancellation_deadline(
+    end_date: date,
+    notice_period_months: int
+) -> date:
+    return end_date - relativedelta(months=notice_period_months)

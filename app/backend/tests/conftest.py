@@ -1,5 +1,3 @@
-import os
-
 from httpx import ASGITransport, AsyncClient
 
 import pytest_asyncio
@@ -12,8 +10,6 @@ from main import app
 
 
 TEST_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
-
-#   TEST_DATABASE_URL = "postgresql+asyncpg://postgres:admin@localhost:5433/postgres"
 
 engine = create_async_engine(
     TEST_DATABASE_URL,
@@ -42,6 +38,13 @@ async def override_get_db():
     async with TestingSessionLocal() as session:
         yield session
 
+@pytest_asyncio.fixture(autouse=True)
+async def clean_db():
+    yield
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
+
 
 @pytest_asyncio.fixture(autouse=True)
 def override_db():
@@ -59,3 +62,45 @@ async def client():
         base_url="http://test",
     ) as ac:
         yield ac
+        
+@pytest_asyncio.fixture
+async def test_user(client):
+    response = await client.post(
+        "/auth/reigster",
+        json={
+            "email": "test@test.com",
+            "password": "123456"
+        }
+    )
+    
+    return response.json()
+
+@pytest_asyncio.fixture
+async def access_token(client):
+    await client.post(
+        "/auth/register",
+        json={
+            "email": "test@test.com",
+            "password": "123456"
+        }
+    )
+    
+    response = await client.post(
+        "/auth/login",
+        json={
+            "email": "test@test.com",
+            "password": "123456"
+        }
+    )
+
+    return response.json()["access_token"]
+
+@pytest_asyncio.fixture
+async def auth_client(client, access_token):
+    client.headers.update(
+        {
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+
+    return client

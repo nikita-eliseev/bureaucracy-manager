@@ -5,6 +5,8 @@ from app.backend.core.security import decode_token
 from app.backend.services.auth import AuthService
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
+from app.backend.services.contract import ContractService
+
 security = HTTPBearer()
 
 async def get_current_user(
@@ -45,3 +47,6 @@ async def get_db():
         
 async def get_auth_serivece(db: AsyncSession = Depends(get_db)):
     return AuthService(db=db)
+
+async def get_contract_serivece(db: AsyncSession = Depends(get_db)):
+    return ContractService(db=db)

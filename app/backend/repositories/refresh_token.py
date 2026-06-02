@@ -4,7 +4,7 @@ from app.backend.models.refresh_token import RefreshToken
 from sqlalchemy.ext.asyncio import AsyncSession
 
 class RefreshTokenRepository:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
         
     async def create(self, user_id: str, token: str, expire_at) -> RefreshToken:
