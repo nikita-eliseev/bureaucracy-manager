@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from fastapi import HTTPException, status
 
 from app.backend.core.config import calculate_cancellation_deadline
@@ -30,8 +32,8 @@ class ContractService:
         
         return ContractResponse.model_validate(contract)
     
-    async def update_contract(self, payload: ContractUpdate, contract_id: int):
-        contract = await self.contract_repository.get_contract_by_id(contract_id)
+    async def update_contract(self, payload: ContractUpdate, user_id: str, contract_id: int):
+        contract = await self.contract_repository.get_contract(user_id=user_id, contract_id=contract_id)
 
         if not contract:
             raise HTTPException(404, "Not found")
@@ -57,8 +59,8 @@ class ContractService:
 
         return ContractResponse.model_validate(contract)
         
-    async def delete_contract(self, contract_id: int) -> None:
-        contract = await self.contract_repository.get_contract_by_id(contract_id=contract_id)
+    async def delete_contract(self, user_id: str, contract_id: int) -> None:
+        contract = await self.contract_repository.get_contract(user_id=user_id, contract_id=contract_id)
         if not contract:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -67,3 +69,21 @@ class ContractService:
         
         await self.contract_repository.delete_contract(contract=contract)
         await self.db.commit()
+        
+    async def get_all_contracts(self, user_id: str):
+        contracts = await self.contract_repository.get_contracts(user_id=user_id)
+        
+        return contracts
+
+    async def get_expiring_contracts(self, user_id: str, days: int = 30):
+        today = date.today()
+        limit_date = today + timedelta(days=days)
+        
+        result = await self.contract_repository.expire_contract(user_id=user_id, limit_date=limit_date)
+        
+        return result
+    
+    async def get_contract(self, user_id: str, contract_id: str):
+        contract = await self.contract_repository.get_contract(user_id=user_id, contract_id=contract_id)   #   doens't save
+        
+        return contract
