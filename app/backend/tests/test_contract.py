@@ -92,6 +92,7 @@ async def test_expiring_contracts(auth_client):
     assert response.status_code == 200
     assert isinstance(response.json(), list)
     
+    
 @pytest.mark.asyncio
 async def test_get_contract_pdf(auth_client):
     response1 = await auth_client.post(
@@ -113,3 +114,5 @@ async def test_get_contract_pdf(auth_client):
     )
     
     assert response2.status_code == 200
+    assert response2.headers["content-type"] == "application/pdf"
+    assert len(response2.content) > 0
