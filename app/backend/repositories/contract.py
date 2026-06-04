@@ -9,11 +9,11 @@ class ContractRepository:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
     
-    async def get_contract_by_id(self, contract_id: int) -> Contract | None:
-        contract = await self.db.execute(
-            select(Contract).where(Contract.id == contract_id)
-        )
-        return contract.scalar_one_or_none()
+    # async def get_contract_by_id(self, contract_id: int) -> Contract | None:
+    #     contract = await self.db.execute(
+    #         select(Contract).where(Contract.id == contract_id)
+    #     )
+    #     return contract.scalar_one_or_none()
         
     async def create(
         self, 
@@ -38,5 +38,35 @@ class ContractRepository:
         
     async def delete_contract(self, contract: Contract) -> None:
         await self.db.delete(contract)
+      
+    async def get_contracts(self, user_id: str):
+        result = await self.db.execute(
+            select(Contract).where(
+                Contract.user_id == user_id
+            )
+        )
         
+        return result.scalars().all()
+    
+    
+    async def expire_contract(self, user_id: str, limit_date: date):
+        result = await self.db.execute(
+            select(Contract).where(
+                Contract.user_id == user_id,
+                Contract.is_active == True,
+                Contract.cancellation_deadline <= limit_date
+            )
+        )
+        
+        return result.scalars().all()
+    
+    async def get_contract(self, user_id: str, contract_id: str) -> Contract:
+        result = await self.db.execute(
+            select(Contract).where(
+                Contract.user_id == user_id,
+                Contract.id == contract_id
+            )
+        )
+        
+        return result.scalar_one_or_none()
         

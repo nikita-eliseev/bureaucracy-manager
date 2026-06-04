@@ -27,7 +27,7 @@ class Contract(Base):
 
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
 
-    cancellation_deadline: Mapped[date] = mapped_column(Date, nullable=False)
+    cancellation_deadline: Mapped[date] = mapped_column(Date, nullable=False, index=True)
 
     notice_period_months: Mapped[int] = mapped_column(default=3)
 
