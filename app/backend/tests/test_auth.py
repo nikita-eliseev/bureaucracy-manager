@@ -72,3 +72,14 @@ async def test_me(client, access_token):
     )
 
     assert response.status_code == 200
+    
+@pytest.mark.asyncio
+async def test_refresh_token(auth_client, refresh_token):
+    response = await auth_client.post(
+        "/auth/refresh",
+        json={
+            "refresh_token": refresh_token
+        }
+    )
+    
+    assert response.status_code == 200

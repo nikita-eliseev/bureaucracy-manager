@@ -7,6 +7,7 @@ async def test_create_contract(auth_client):
         json={
             "company": "Vodafone",
             "contract_type": "Internet",
+            "monthly_price": 69.9,
             "end_date": "2027-01-01",
             "notice_period_months": 3
         }
@@ -26,6 +27,7 @@ async def test_update_contract(auth_client):
         json={
             "company": "Vodafone",
             "contract_type": "Internet",
+            "monthly_price": 69.9,
             "end_date": "2027-01-01",
             "notice_period_months": 3
         }
@@ -40,6 +42,7 @@ async def test_update_contract(auth_client):
         json={
             "company": "Test",
             "contract_type": "test2",
+            "monthly_price": 69.9,
             "end_date": "2027-01-01",
             "notice_period_months": 1
         }
@@ -59,6 +62,7 @@ async def test_delete_contract(auth_client):
         json={
             "company": "Vodafone",
             "contract_type": "Internet",
+            "monthly_price": 69.9,
             "end_date": "2027-01-01",
             "notice_period_months": 3
         }
@@ -100,6 +104,7 @@ async def test_get_contract_pdf(auth_client):
         json={
             "company": "Vodafone",
             "contract_type": "Internet",
+            "monthly_price": 69.9,
             "end_date": "2027-01-01",
             "notice_period_months": 3
         }    

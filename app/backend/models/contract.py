@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from datetime import date, datetime, timezone
-from sqlalchemy import String, Date, DateTime, ForeignKey
+from decimal import Decimal
+from sqlalchemy import Numeric, String, Date, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.backend.core.database import Base
@@ -23,7 +24,12 @@ class Contract(Base):
     )
 
     company: Mapped[str] = mapped_column(String(255), nullable=False)
+    
     contract_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    
+    monthly_price: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2)
+    )
 
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
 

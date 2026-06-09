@@ -4,7 +4,7 @@ from fastapi.responses import StreamingResponse
 from app.backend.core.dependencies import get_contract_serivece, get_current_user
 from app.backend.schemas.contract import ContractCreate, ContractUpdate
 from app.backend.services.contract import ContractService
-from app.utils.pdf import generate_contract_pdf
+from app.utils.pdf import generate_cancellation_pdf
 
 
 router = APIRouter(prefix="/contracts", tags=["CONTRACTS"])
@@ -20,7 +20,7 @@ async def create(
         user_id=user_id
     )
     
-@router.patch("/{contract_id}", status_code=status.HTTP_200_OK)
+@router.patch("/{contract_id:int}", status_code=status.HTTP_200_OK)
 async def update(
     contract_id: int,
     payload: ContractUpdate,
@@ -33,7 +33,7 @@ async def update(
         contract_id=contract_id
     )
     
-@router.delete("/{contract_id}", status_code=status.HTTP_200_OK)
+@router.delete("/{contract_id:int}", status_code=status.HTTP_200_OK)
 async def delete(
     contract_id: int,
     user_id: str = Depends(get_current_user),
@@ -42,6 +42,28 @@ async def delete(
     await contract_services.delete_contract(user_id=user_id, contract_id=contract_id)
     return {
         "status": "Deleted"
+    }
+    
+@router.get("/{contract_id:int}", status_code=status.HTTP_200_OK)
+async def get_contract(
+    contract_id: int,
+    user_id: str = Depends(get_current_user),
+    contract_services: ContractService = Depends(get_contract_serivece)
+):
+    contract = await contract_services.get_contract(user_id=user_id, contract_id=contract_id)
+    
+    if not contract:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contract not found")
+    
+    return {
+        "id": contract.id,
+        "company": contract.company,
+        "contract_type": contract.contract_type,
+        "monthly_price": contract.monthly_price,
+        "end_date": contract.end_date,
+        "notice_period_months": contract.notice_period_months,
+        "cancellation_deadline": contract.cancellation_deadline,
+        "is_active": contract.is_active,
     }
     
 @router.get("", status_code=status.HTTP_200_OK)
@@ -58,12 +80,13 @@ async def all_contracts(
             "contract_type": c.contract_type,
             "end_date": c.end_date,
             "cancellation_deadline": c.cancellation_deadline,
+            "is_active": c.is_active
         }
         for c in contracts
     ]
     
     
-    
+
 @router.get("/expiring", status_code=status.HTTP_200_OK)
 async def get_expiring_contracts(
     days: int = Query(30, ge=1, le=365),
@@ -83,7 +106,7 @@ async def get_expiring_contracts(
         for c in contracts
     ]
     
-@router.get("/{contract_id}/pdf", status_code=status.HTTP_200_OK)
+@router.get("/{contract_id:int}/pdf", status_code=status.HTTP_200_OK)
 async def get_contract_pdf(
     contract_id: int, 
     user_id: str = Depends(get_current_user),
@@ -94,7 +117,7 @@ async def get_contract_pdf(
     if not contract:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contract not found")
     
-    pdf_buffer = generate_contract_pdf(contract=contract)
+    pdf_buffer = generate_cancellation_pdf(contract=contract)
     
     return StreamingResponse(
         pdf_buffer,

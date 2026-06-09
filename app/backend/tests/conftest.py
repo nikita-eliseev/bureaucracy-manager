@@ -96,6 +96,26 @@ async def access_token(client):
     return response.json()["access_token"]
 
 @pytest_asyncio.fixture
+async def refresh_token(client):
+    await client.post(
+        "/auth/register",
+        json={
+            "email": "test@test.com",
+            "password": "123456"
+        }
+    )
+    
+    response = await client.post(
+        "/auth/login",
+        json={
+            "email": "test@test.com",
+            "password": "123456"
+        }
+    )
+
+    return response.json()["refresh_token"]
+
+@pytest_asyncio.fixture
 async def auth_client(client, access_token):
     client.headers.update(
         {
