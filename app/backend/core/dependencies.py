@@ -1,4 +1,5 @@
 from fastapi import Depends, HTTPException, status
+from jose import JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.backend.core.database import AsyncSessionLocal
 from app.backend.core.security import decode_token
@@ -15,29 +16,25 @@ async def get_current_user(
     token = credentials.credentials
     
     try:
-        payload = decode_token(token=token)
+        payload = decode_token(token)
+    except JWTError as e:
+        raise HTTPException(401, detail=f"JWT error: {str(e)}")
 
-        if payload.get("type") != "access":
-            raise HTTPException(
+    if payload.get("type") != "access":
+        raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token type"
         )
-
-        user_id = payload.get("sub")
-        
-        if not user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token"
-            )
             
-        return user_id
-    
-    except Exception:
+    user_id = payload.get("sub")
+        
+    if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token"
+            detail="Invalid token"
         )
+            
+    return user_id
         
 
 

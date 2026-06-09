@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 
 from fastapi import HTTPException, status
 from jose import JWTError
@@ -61,19 +61,26 @@ class AuthService:
             token=hashed_refresh,
             expire_at=expire_at
         )
+        print("USER:", user.email)
+        print("RAW PASSWORD:", password)
+        print("HASH:", user.hashed_password)
+
+        print("VERIFY RESULT:", verify_password(password, user.hashed_password))
         await self.db.commit()
         return access, refresh
     
     async def refresh(self, refresh_token: str):
-        db_token = await self.refresh_token_repository.get(refresh_token)
+        db_token = await self.refresh_token_repository.get(hash_token(refresh_token))
 
         if not db_token:
             return None
 
         if db_token.revoked:
             return None
+        
+        expire_at = db_token.expire_at.replace(tzinfo=UTC)
 
-        if db_token.expire_at < datetime.now(timezone.utc):
+        if expire_at < datetime.now(UTC):
             return None
         
         try:
@@ -90,5 +97,5 @@ class AuthService:
             )  
         
     async def logout(self, refresh_token: str):
-        await self.refresh_token_repository.delete(refresh_token)
-        self.db.commit()
+        await self.refresh_token_repository.delete(hash_token(refresh_token))
+        await self.db.commit()

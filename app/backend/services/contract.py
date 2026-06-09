@@ -19,6 +19,7 @@ class ContractService:
             user_id=user_id,
             company=payload.company,
             contract_type=payload.contract_type,
+            monthly_price=payload.monthly_price,
             end_date=payload.end_date,
             cancellation_deadline=calculate_cancellation_deadline(
                 end_date=payload.end_date, 
@@ -43,6 +44,9 @@ class ContractService:
 
         if payload.contract_type is not None:
             contract.contract_type = payload.contract_type
+        
+        if payload.monthly_price is not None:
+            contract.monthly_price = payload.monthly_price
 
         if payload.notice_period_months is not None:
             contract.notice_period_months = payload.notice_period_months
@@ -76,14 +80,14 @@ class ContractService:
         return contracts
 
     async def get_expiring_contracts(self, user_id: str, days: int = 30):
-        today = date.today()
-        limit_date = today + timedelta(days=days)
+        today = date.today() 
+        limit_date = today + timedelta(days=days)  
         
         result = await self.contract_repository.expire_contract(user_id=user_id, limit_date=limit_date)
         
         return result
     
     async def get_contract(self, user_id: str, contract_id: str):
-        contract = await self.contract_repository.get_contract(user_id=user_id, contract_id=contract_id)   #   doens't save
+        contract = await self.contract_repository.get_contract(user_id=user_id, contract_id=contract_id)  
         
         return contract
