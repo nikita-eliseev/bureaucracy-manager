@@ -66,7 +66,7 @@ async def client():
 @pytest_asyncio.fixture
 async def test_user(client):
     response = await client.post(
-        "/auth/reigster",
+        "/auth/register",
         json={
             "email": "test@test.com",
             "password": "123456"

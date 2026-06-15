@@ -18,7 +18,9 @@ async def get_current_user(
     try:
         payload = decode_token(token)
     except JWTError as e:
-        raise HTTPException(401, detail=f"JWT error: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail=f"JWT error: {str(e)}"
+                        )
 
     if payload.get("type") != "access":
         raise HTTPException(
@@ -42,7 +44,7 @@ async def get_db():
     async with AsyncSessionLocal() as session:
         yield session
         
-async def get_auth_serivece(db: AsyncSession = Depends(get_db)):
+async def get_auth_service(db: AsyncSession = Depends(get_db)):
     return AuthService(db=db)
 
 async def get_contract_serivece(db: AsyncSession = Depends(get_db)):

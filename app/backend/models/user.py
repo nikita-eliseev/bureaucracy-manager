@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from uuid import uuid4
-from sqlalchemy import String, Boolean, DateTime
+from sqlalchemy import ForeignKey, String, Boolean, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship 
 
 from app.backend.core.database import Base
@@ -38,3 +38,7 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan"
     )
+    
+    
+    
+    

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import status
 
-from app.backend.core.dependencies import get_auth_serivece, get_current_user
+from app.backend.core.dependencies import get_auth_service, get_current_user
 from app.backend.schemas.auth import LoginRequest, RefreshRequest, RegisterRequest, TokenResponse
 from app.backend.services.auth import AuthService
 
@@ -11,7 +11,7 @@ router = APIRouter(prefix="/auth", tags=["AUTH"])
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register(
     payload: RegisterRequest, 
-    auth_service: AuthService = Depends(get_auth_serivece)
+    auth_service: AuthService = Depends(get_auth_service)
 ):
     return await auth_service.register(
         email=payload.email, 
@@ -21,7 +21,7 @@ async def register(
 @router.post("/login")
 async def login(
     payload: LoginRequest, 
-    auth_service: AuthService = Depends(get_auth_serivece)
+    auth_service: AuthService = Depends(get_auth_service)
 ):
 
     tokens = await auth_service.login(
@@ -45,10 +45,10 @@ async def login(
 
 @router.post("/refresh")
 async def refresh(
-    paylaod: RefreshRequest, 
-    auth_service: AuthService = Depends(get_auth_serivece)
+    payload: RefreshRequest, 
+    auth_service: AuthService = Depends(get_auth_service)
 ):
-    token = await auth_service.refresh(paylaod.refresh_token)
+    token = await auth_service.refresh(payload.refresh_token)
 
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
@@ -58,7 +58,7 @@ async def refresh(
 @router.post("/logout")
 async def logout(
     payload: RefreshRequest, 
-    auth_service: AuthService = Depends(get_auth_serivece)
+    auth_service: AuthService = Depends(get_auth_service)
 ):
 
     await auth_service.logout(payload.refresh_token)
