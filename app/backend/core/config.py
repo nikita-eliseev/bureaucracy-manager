@@ -10,9 +10,10 @@ class Settings(BaseSettings):
     
     database_url: str = Field(validation_alias="DATABASE_URL")
     
-    cors_origins: list[str]
+    cors_origins: str = ""
     
     algorithm: str
+    
     secret_key: str
     
     access_token_expire_minutes: int = 15
