@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "main", "develop", "feature/**" ]
+    branches: ["main", "develop", "feature/**"]
   pull_request:
 
 jobs:
@@ -27,6 +27,7 @@ jobs:
     env:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/test_db
       PYTHONPATH: app/backend
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
     steps:
       - name: Checkout code
@@ -37,9 +38,6 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Load env file
-        run: cp .env.ci .env
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -47,4 +45,4 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m pytest app/backend/tests -v
+          pytest app/backend/tests -v
