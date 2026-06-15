@@ -27,7 +27,6 @@ jobs:
     env:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/test_db
       PYTHONPATH: .
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
       ALGORITHM: ${{ secrets.ALGORITHM }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
