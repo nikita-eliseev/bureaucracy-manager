@@ -61,11 +61,6 @@ class AuthService:
             token=hashed_refresh,
             expire_at=expire_at
         )
-        print("USER:", user.email)
-        print("RAW PASSWORD:", password)
-        print("HASH:", user.hashed_password)
-
-        print("VERIFY RESULT:", verify_password(password, user.hashed_password))
         await self.db.commit()
         return access, refresh
     

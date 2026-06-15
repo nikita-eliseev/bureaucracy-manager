@@ -36,11 +36,12 @@ class ContractRepository:
     async def delete_contract(self, contract: Contract) -> None:
         await self.db.delete(contract)
       
-    async def get_contracts(self, user_id: str):
+    async def get_contracts(self, user_id: str, limit: int, offset: int):
         result = await self.db.execute(
-            select(Contract).where(
-                Contract.user_id == user_id
-            )
+            select(Contract)
+            .where(Contract.user_id == user_id)
+            .limit(limit=limit)
+            .offset(offset=offset)
         )
         
         return result.scalars().all()

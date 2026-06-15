@@ -74,8 +74,8 @@ class ContractService:
         await self.contract_repository.delete_contract(contract=contract)
         await self.db.commit()
         
-    async def get_all_contracts(self, user_id: str):
-        contracts = await self.contract_repository.get_contracts(user_id=user_id)
+    async def get_all_contracts(self, user_id: str, limit: int, offset: int):
+        contracts = await self.contract_repository.get_contracts(user_id=user_id, limit=limit, offset=offset)
         
         return contracts
 
