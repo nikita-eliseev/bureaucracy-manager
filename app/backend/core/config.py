@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     
     database_url: str = Field(validation_alias="DATABASE_URL")
     
-    cors_origins: str
+    cors_origins: list[str]
     
     algorithm: str
     secret_key: str
