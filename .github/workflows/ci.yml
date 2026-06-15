@@ -38,7 +38,7 @@ jobs:
           python-version: "3.12"
 
       - name: Load env file
-        run: cp .env
+        run: cp .env .env.ci
 
       - name: Install dependencies
         run: |
