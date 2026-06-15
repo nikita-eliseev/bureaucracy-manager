@@ -10,7 +10,10 @@ class Settings(BaseSettings):
     
     database_url: str = Field(validation_alias="DATABASE_URL")
     
+    cors_origins: str = ""
+    
     algorithm: str
+    
     secret_key: str
     
     access_token_expire_minutes: int = 15
@@ -20,6 +23,14 @@ class Settings(BaseSettings):
         env_file=".env",   
         case_sensitive=False
     )
+    
+    @property
+    def cors_origins_list(self) -> list[str]:
+        return [
+            origin.strip()
+            for origin in self.cors_origins.split(",")
+            if origin.strip()
+        ]
     
     
 settings = Settings()
