@@ -6,7 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="BEREAUCRACY-MANAGER",
-    debug=settings.debug
+    debug=settings.debug,
+    root_path="/api"
 )
 
 app.include_router(auth_router)
