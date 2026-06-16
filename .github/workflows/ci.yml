@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "main", "develop", "feature/**" ]
+    branches: ["main", "develop", "feature/**"]
   pull_request:
 
 jobs:
@@ -27,6 +27,8 @@ jobs:
     env:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/test_db
       PYTHONPATH: app/backend
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALGORITHM: HS256
 
     steps:
       - name: Checkout code
@@ -36,9 +38,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - name: Load env file
-        run: cp .env.ci .env
 
       - name: Install dependencies
         run: |
