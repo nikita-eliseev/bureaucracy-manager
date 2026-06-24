@@ -2,6 +2,7 @@ from datetime import date, timedelta
 
 from fastapi import HTTPException, status
 
+from app.backend.core.logger import logger
 from app.backend.core.config import calculate_cancellation_deadline
 from app.backend.repositories.contract import ContractRepository
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -27,9 +28,12 @@ class ContractService:
             ),
             notice_period_months=payload.notice_period_months
         )
-        
         await self.db.commit()
         await self.db.refresh(contract)
+        
+        logger.info(
+            f"Contract created. contract_id={contract.id}, user_id={user_id}"
+        )
         
         return ContractResponse.model_validate(contract)
     
@@ -37,7 +41,13 @@ class ContractService:
         contract = await self.contract_repository.get_contract(user_id=user_id, contract_id=contract_id)
 
         if not contract:
-            raise HTTPException(404, "Not found")
+            logger.warning(
+                f"Contract not found. contract_id={contract_id}, user_id={user_id}"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, 
+                detail="Contract not found"
+            )
 
         if payload.company is not None:
             contract.company = payload.company
@@ -60,12 +70,19 @@ class ContractService:
 
         await self.db.commit()
         await self.db.refresh(contract)
-
+        
+        logger.info(
+            f"Contract  updated. contract_id={contract_id}, user_id={user_id}"
+        )
+        
         return ContractResponse.model_validate(contract)
         
     async def delete_contract(self, user_id: str, contract_id: int) -> None:
         contract = await self.contract_repository.get_contract(user_id=user_id, contract_id=contract_id)
         if not contract:
+            logger.warning(
+                "Contract does not exist."
+            )
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="This contract does not exist."
@@ -73,6 +90,10 @@ class ContractService:
         
         await self.contract_repository.delete_contract(contract=contract)
         await self.db.commit()
+        
+        logger.info(
+            f"Contract  deleted. contract_id={contract_id}, user_id={user_id}"
+        )
         
     async def get_all_contracts(self, user_id: str, limit: int, offset: int):
         contracts = await self.contract_repository.get_contracts(user_id=user_id, limit=limit, offset=offset)
