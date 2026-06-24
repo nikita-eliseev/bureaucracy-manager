@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from app.backend.core.config import settings
 from app.backend.api.routes.auth import router as auth_router
 from app.backend.api.routes.contract import router as document_router
+from app.backend.api.routes.system import router as system_router
+from app.backend.api.routes.user import router as user_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
@@ -12,6 +14,8 @@ app = FastAPI(
 
 app.include_router(auth_router)
 app.include_router(document_router)
+app.include_router(system_router)
+app.include_router(user_router)
 
 app.add_middleware(
     CORSMiddleware,

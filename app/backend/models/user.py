@@ -25,6 +25,16 @@ class User(Base):
     )
 
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+    
+    full_name: Mapped[str] = mapped_column(String(255), nullable=True)
+    
+    address: Mapped[str] = mapped_column(String(255), nullable=True)
+    
+    city: Mapped[str] = mapped_column(String(100), nullable=True)
+    
+    postal_code: Mapped[str] = mapped_column(String(20), nullable=True)
+    
+    country: Mapped[str] = mapped_column(default="Germany")
 
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
@@ -32,7 +42,6 @@ class User(Base):
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
     )
-
 
     contracts: Mapped[List["Contract"]] = relationship(
         back_populates="user",

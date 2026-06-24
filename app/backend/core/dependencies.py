@@ -7,6 +7,7 @@ from app.backend.services.auth import AuthService
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.backend.services.contract import ContractService
+from app.backend.services.user import UserService
 
 security = HTTPBearer()
 
@@ -49,3 +50,6 @@ async def get_auth_service(db: AsyncSession = Depends(get_db)):
 
 async def get_contract_serivece(db: AsyncSession = Depends(get_db)):
     return ContractService(db=db)
+
+async def get_user_service(db: AsyncSession = Depends(get_db)):
+    return UserService(db=db)

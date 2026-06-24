@@ -48,12 +48,16 @@ async def refresh(
     payload: RefreshRequest, 
     auth_service: AuthService = Depends(get_auth_service)
 ):
-    token = await auth_service.refresh(payload.refresh_token)
+    access_token, refresh_token = await auth_service.refresh(payload.refresh_token)
 
-    if not token:
+    if not access_token or not refresh_token: 
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
-    return {"access_token": token}
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token
+    }
+    
 
 @router.post("/logout")
 async def logout(
