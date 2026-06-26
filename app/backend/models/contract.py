@@ -25,6 +25,8 @@ class Contract(Base):
 
     company: Mapped[str] = mapped_column(String(255), nullable=False)
     
+    company_address: Mapped[str] = mapped_column(String(255), nullable=False)
+    
     contract_type: Mapped[str] = mapped_column(String(100), nullable=False)
     
     monthly_price: Mapped[Decimal] = mapped_column(

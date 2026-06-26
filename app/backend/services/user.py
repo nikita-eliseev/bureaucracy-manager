@@ -11,10 +11,12 @@ class UserService:
         self.db = db
         self.user_repository = UserRepository(db=db)
         
-    async def update_user(self, user_id: str, payload: UserProfileUpdate):
+    async def update_user(self, user_id: str, payload: UserProfileUpdate) -> UserResponse:
         user = await self.user_repository.get_by_id(user_id=user_id)
         
         if not user:
+            logger.warning(f"User does not found. user_id={user_id}")
+            
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User does not found."
@@ -43,4 +45,16 @@ class UserService:
         
         logger.info(f"User updated. user_id={user_id}")
         
+        return UserResponse.model_validate(user)
+    
+    async def get_user(self, user_id: str) -> UserResponse:
+        user = await self.user_repository.get_by_id(user_id=user_id)
+        
+        if not user:
+            logger.warning(f"User does not found. user_id={user_id}")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, 
+                                detail="User does not found"
+                            )
+            
         return UserResponse.model_validate(user)

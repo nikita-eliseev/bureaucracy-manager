@@ -13,7 +13,8 @@ class ContractRepository:
     async def create(
         self, 
         user_id: str,
-        company: str, 
+        company: str,
+        company_address: str, 
         contract_type: str,
         monthly_price: Decimal,
         cancellation_deadline: date,
@@ -23,6 +24,7 @@ class ContractRepository:
         contract = Contract(
             user_id=user_id,
             company=company,
+            company_address=company_address,
             contract_type=contract_type,
             monthly_price=monthly_price,
             end_date=end_date,

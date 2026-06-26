@@ -6,10 +6,13 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 
+from app.backend.models.contract import Contract
+from app.backend.models.user import User
 
-def generate_cancellation_letter_pdf(contract, user_email: str = None) -> BytesIO:
+
+def generate_cancellation_letter_pdf(contract: Contract, user: User) -> BytesIO:
     buffer = BytesIO()
-
+    
     doc = SimpleDocTemplate(
         buffer,
         pagesize=A4,
@@ -33,44 +36,32 @@ def generate_cancellation_letter_pdf(contract, user_email: str = None) -> BytesI
     )
 
     elements = []
+    
 
-    # =====================================================
-    # HEADER BLOCK (Sender - currently minimal)
-    # =====================================================
-
-    sender_block = """
-    John Doe<br/>
-    Main Street 15<br/>
-    10115 Berlin
+    sender_block = f"""
+    {user.full_name}<br/>
+    {user.address}<br/>
+    {user.postal_code} {user.city}
     """
 
     elements.append(Paragraph(sender_block, normal))
     elements.append(Spacer(1, 20))
 
-    # =====================================================
-    # RECIPIENT (placeholder SaaS-safe)
-    # =====================================================
 
     recipient_block = f"""
     {contract.company}<br/>
     Customer Service<br/>
-    [Company Address Missing]
+    {contract.company_address}<br/>
     """
 
     elements.append(Paragraph(recipient_block, normal))
     elements.append(Spacer(1, 20))
 
-    # =====================================================
-    # DATE
-    # =====================================================
 
     today = date.today().strftime("%d %B %Y")
     elements.append(Paragraph(today, normal))
     elements.append(Spacer(1, 20))
 
-    # =====================================================
-    # SUBJECT
-    # =====================================================
 
     subject = f"""
     <b>Subject:</b><br/>
@@ -80,9 +71,6 @@ def generate_cancellation_letter_pdf(contract, user_email: str = None) -> BytesI
     elements.append(Paragraph(subject, normal))
     elements.append(Spacer(1, 20))
 
-    # =====================================================
-    # BODY
-    # =====================================================
 
     body = f"""
     Dear Sir or Madam,<br/><br/>
@@ -99,17 +87,13 @@ def generate_cancellation_letter_pdf(contract, user_email: str = None) -> BytesI
 
     Kind regards,<br/><br/><br/>
 
-    John Doe<br/>
+    {user.full_name}<br/>
     _____________________<br/>
     Signature
     """
 
     elements.append(Paragraph(body, normal))
     elements.append(Spacer(1, 30))
-
-    # =====================================================
-    # FOOTER
-    # =====================================================
 
     footer = """
     ------------------------------------------------<br/>

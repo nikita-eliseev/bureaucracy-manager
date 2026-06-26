@@ -27,5 +27,6 @@ class UserRepository:
         )
         
         self.db.add(user)
+        
         return user
     
