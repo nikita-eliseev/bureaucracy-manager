@@ -10,6 +10,11 @@ class ContractCreate(BaseModel):
         max_length=100, 
         examples=["Vodafone", "TK Krankenkasse"]
     )
+    company_address: str = Field(
+        ...,
+        min_length=5,
+        max_length=100
+    )
     contract_type: str
     monthly_price: Decimal = Field(gt=0)
     end_date: date
@@ -26,6 +31,7 @@ class ContractCreate(BaseModel):
 
 class ContractUpdate(BaseModel):
     company: str | None = None
+    company_address: str | None = None
     contract_type: str | None = None
     monthly_price: Decimal | None = None
     end_date: date | None = None
@@ -35,6 +41,7 @@ class ContractUpdate(BaseModel):
 class ContractResponse(BaseModel):
     id: int
     company: str
+    company_address: str
     contract_type: str
     monthly_price: Decimal
     end_date: date

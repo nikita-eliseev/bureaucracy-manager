@@ -19,6 +19,7 @@ class ContractService:
         contract = await self.contract_repository.create(
             user_id=user_id,
             company=payload.company,
+            company_address=payload.company_address,
             contract_type=payload.contract_type,
             monthly_price=payload.monthly_price,
             end_date=payload.end_date,
@@ -51,6 +52,9 @@ class ContractService:
 
         if payload.company is not None:
             contract.company = payload.company
+            
+        if payload.company_address is not None:
+            contract.company_address = payload.company_address
 
         if payload.contract_type is not None:
             contract.contract_type = payload.contract_type

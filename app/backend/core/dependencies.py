@@ -48,7 +48,7 @@ async def get_db():
 async def get_auth_service(db: AsyncSession = Depends(get_db)):
     return AuthService(db=db)
 
-async def get_contract_serivece(db: AsyncSession = Depends(get_db)):
+async def get_contract_service(db: AsyncSession = Depends(get_db)):
     return ContractService(db=db)
 
 async def get_user_service(db: AsyncSession = Depends(get_db)):
